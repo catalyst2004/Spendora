@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Bitcount Prop Double
+- Font Author: undefined
+- Font Source: https://fonts.gstatic.com/s/bitcountpropdouble/v1/K2EvfY5Wn-tBSVxaDL6DUOXQJ26dEAnh698zMFjGZaPCtbJHl1TFmDKfGe4_bKUh3sC1Q7DxZ5-3PQRHsSZEX9ctiFN1ZosZvKyl3LzeFmQvK5hIm0nBWck4Kx91m1YFsiM.ttf
+- Font License: undefined)

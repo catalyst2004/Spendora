@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Penny-Tracker — Expense Tracker</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+  <!-- PWA ---new changes. for mobile application like features and icons. --->
+<meta name="theme-color" content="#2563EB" id="themeColorMeta"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Spendora"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
+</head>
+<body>
+
+  <!-- ═══════════ AUTH SCREEN ═══════════ -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-left">
+      <div class="auth-brand">
+        <svg viewBox="0 0 36 36" fill="none" width="36" height="36">
+          <rect width="36" height="36" rx="10" fill="#2563EB"/>
+          <path d="M11 18h14M18 11v14" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <span>Penny-Tracker</span>
+      </div>
+      <div class="auth-hero">
+        <h1 class="auth-headline">Your finances,<br/><em>finally clear.</em></h1>
+        <p class="auth-sub">A calm, focused space to track your spending, set goals, and understand where your money really goes.</p>
+        <ul class="auth-features">
+          <li><i data-lucide="shield-check"></i>Private data per user</li>
+          <li><i data-lucide="bar-chart-2"></i>Visual analytics</li>
+          <li><i data-lucide="target"></i>Budget goals & alerts</li>
+          <li><i data-lucide="zap"></i>Smart insights</li>
+        </ul>
+      </div>
+      <p class="auth-disclaimer">All data is stored locally in your browser.</p>
+    </div>
+
+    <div class="auth-right">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Sign in</button>
+          <button class="auth-tab" data-tab="register">Register</button>
+        </div>
+
+        <!-- Login -->
+        <form id="loginForm" class="auth-form active">
+          <div class="auth-form-title">
+            <h2>Welcome back</h2>
+            <p>Sign in to your account to continue</p>
+          </div>
+          <div class="field-group">
+            <label>Username</label>
+            <div class="field-wrap">
+              <i data-lucide="user"></i>
+              <input type="text" id="loginUser" placeholder="Your username" autocomplete="off"/>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Password</label>
+            <div class="field-wrap">
+              <i data-lucide="lock"></i>
+              <input type="password" id="loginPass" placeholder="Your password"/>
+              <button type="button" class="pw-toggle" data-target="loginPass"><i data-lucide="eye"></i></button>
+            </div>
+          </div>
+          <p class="form-error" id="loginError"></p>
+          <button type="submit" class="btn-primary full-w">Sign in</button>
+          <p class="auth-switch">No account? <button type="button" class="link-btn" data-tab="register">Create one</button></p>
+        </form>
+
+        <!-- Register -->
+        <form id="registerForm" class="auth-form">
+          <div class="auth-form-title">
+            <h2>Create account</h2>
+            <p>Set up your personal workspace</p>
+          </div>
+          <div class="field-group">
+            <label>Full Name</label>
+            <div class="field-wrap">
+              <i data-lucide="user-circle"></i>
+              <input type="text" id="regName" placeholder="Your full name"/>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Username</label>
+            <div class="field-wrap">
+              <i data-lucide="at-sign"></i>
+              <input type="text" id="regUser" placeholder="Pick a username" autocomplete="off"/>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Password</label>
+            <div class="field-wrap">
+              <i data-lucide="lock"></i>
+              <input type="password" id="regPass" placeholder="Create a password"/>
+              <button type="button" class="pw-toggle" data-target="regPass"><i data-lucide="eye"></i></button>
+            </div>
+          </div>
+          <p class="form-error" id="registerError"></p>
+          <button type="submit" class="btn-primary full-w">Create account</button>
+          <p class="auth-switch">Already registered? <button type="button" class="link-btn" data-tab="login">Sign in</button></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ APP SCREEN ═══════════ -->
+  <div id="appScreen" class="app-screen hidden">
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-top">
+        <div class="sb-logo">
+          <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
+            <rect width="32" height="32" rx="9" fill="#2563EB"/>
+            <path d="M10 16h12M16 10v12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Penny-Tracker</span>
+        </div>
+        <nav class="sb-nav">
+          <button class="nav-item active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></button>
+          <button class="nav-item" data-view="transactions"><i data-lucide="list"></i><span>Transactions</span></button>
+          <button class="nav-item" data-view="analytics"><i data-lucide="bar-chart-2"></i><span>Analytics</span></button>
+          <button class="nav-item" data-view="budget"><i data-lucide="target"></i><span>Budgets</span></button>
+        </nav>
+      </div>
+      <div class="sb-bottom">
+        <div class="user-card">
+          <div class="user-avatar" id="userAvatar"></div>
+          <div class="user-meta">
+            <p class="user-name" id="userName"></p>
+            <p class="user-handle" id="userHandle"></p>
+          </div>
+        </div>
+        <button class="nav-item nav-danger" id="logoutBtn"><i data-lucide="log-out"></i><span>Sign out</span></button>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="tb-left">
+          <button class="icon-btn" id="hamburger"><i data-lucide="menu"></i></button>
+          <div>
+            <h1 class="page-title" id="pageTitle">Dashboard</h1>
+            <p class="page-date" id="todayDate"></p>
+          </div>
+        </div>
+        <div class="tb-right">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="text" id="searchInput" placeholder="Search transactions…"/>
+          </div>
+          <button class="icon-btn theme-toggle" id="themeToggle" title="Toggle dark mode">
+  <i data-lucide="moon"></i>
+</button>
+          <button class="btn-primary" id="openModal"><i data-lucide="plus"></i>Add Expense</button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section class="view active" id="view-dashboard">
+        <div class="kpi-row">
+          <div class="kpi-card accent-blue">
+            <div class="kpi-icon"><i data-lucide="wallet"></i></div>
+            <div><p class="kpi-label">Total This Month</p><h2 class="kpi-val" id="totalSpent">₹0</h2></div>
+          </div>
+          <div class="kpi-card accent-sky">
+            <div class="kpi-icon"><i data-lucide="trending-up"></i></div>
+            <div><p class="kpi-label">Top Category</p><h2 class="kpi-val" id="highestCat">—</h2></div>
+          </div>
+          <div class="kpi-card accent-violet">
+            <div class="kpi-icon"><i data-lucide="calculator"></i></div>
+            <div><p class="kpi-label">Daily Average</p><h2 class="kpi-val" id="dailyAvg">₹0</h2></div>
+          </div>
+          <div class="kpi-card accent-emerald">
+            <div class="kpi-icon"><i data-lucide="receipt"></i></div>
+            <div><p class="kpi-label">Total Transactions</p><h2 class="kpi-val" id="txCount">0</h2></div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel span-2">
+            <div class="panel-head">
+              <h3>Spending Trend</h3>
+              <div class="seg-group">
+                <button class="seg active" data-days="7">7D</button>
+                <button class="seg" data-days="30">30D</button>
+                <button class="seg" data-days="90">90D</button>
+              </div>
+            </div>
+            <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>This Month</h3></div>
+            <div class="chart-wrap donut-wrap"><canvas id="donutChart"></canvas></div>
+            <div id="donutLegend" class="legend-list"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>Smart Insights</h3></div>
+          <div class="insights-row" id="insightsGrid"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Recent Activity</h3>
+            <button class="text-btn" data-view="transactions">See all</button>
+          </div>
+          <div class="tx-list" id="recentList"></div>
+        </div>
+      </section>
+
+      <!-- TRANSACTIONS -->
+      <section class="view" id="view-transactions">
+        <div class="panel">
+          <div class="panel-head wrap-head">
+            <div class="filter-row">
+              <select id="filterCat" class="ctrl-select"><option value="">All Categories</option></select>
+              <select id="filterSort" class="ctrl-select">
+                <option value="date-desc">Newest first</option>
+                <option value="date-asc">Oldest first</option>
+                <option value="amount-desc">Highest amount</option>
+                <option value="amount-asc">Lowest amount</option>
+              </select>
+            </div>
+            <button class="btn-outline" id="exportCSV"><i data-lucide="download"></i>Export CSV</button>
+          </div>
+          <div class="tx-list" id="fullTxList"></div>
+        </div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section class="view" id="view-analytics">
+        <div class="two-col">
+          <div class="panel span-2">
+            <div class="panel-head"><h3>Monthly Spending</h3></div>
+            <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Category Share</h3></div>
+            <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+          </div>
+        </div>
+        <div class="kpi-row mt-0" id="analyticsStats"></div>
+      </section>
+
+      <!-- BUDGET -->
+      <section class="view" id="view-budget">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Budget Goals</h3>
+            <button class="btn-primary small" id="openBudgetModal"><i data-lucide="plus"></i>Set Budget</button>
+          </div>
+          <div class="budget-grid" id="budgetGrid"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- EXPENSE MODAL -->
+  <div class="overlay" id="modal">
+    <div class="dialog">
+      <div class="dialog-head">
+        <h2>New Expense</h2>
+        <button class="icon-btn" id="closeModal"><i data-lucide="x"></i></button>
+      </div>
+      <form id="expenseForm">
+        <div class="form-grid">
+          <div class="field-group"><label>Title</label><input type="text" id="expTitle" placeholder="e.g. Grocery run" required/></div>
+          <div class="field-group"><label>Amount (₹)</label><input type="number" id="expAmount" placeholder="0" min="1" step="any" required/></div>
+          <div class="field-group">
+            <label>Category</label>
+            <select id="expCategory" required>
+              <option value="">Select…</option>
+              <option>🍔 Food & Dining</option><option>🚗 Transport</option><option>🛍️ Shopping</option>
+              <option>💡 Utilities</option><option>🏥 Healthcare</option><option>🎬 Entertainment</option>
+              <option>📚 Education</option><option>🏠 Housing</option><option>✈️ Travel</option>
+              <option>💪 Fitness</option><option>🎁 Gifts</option><option>📦 Other</option>
+            </select>
+          </div>
+          <div class="field-group"><label>Date</label><input type="date" id="expDate" required/></div>
+          <div class="field-group full"><label>Note <span class="muted-label">optional</span></label><input type="text" id="expNote" placeholder="Add a note…"/></div>
+          <div class="field-group full">
+            <label>Payment Method</label>
+            <div class="chip-row" id="paymentOptions">
+              <label class="chip active"><input type="radio" name="pay" value="Cash" checked/>Cash</label>
+              <label class="chip"><input type="radio" name="pay" value="UPI"/>UPI</label>
+              <label class="chip"><input type="radio" name="pay" value="Card"/>Card</label>
+              <label class="chip"><input type="radio" name="pay" value="Net Banking"/>Net Banking</label>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary full-w mt-8">Save Expense</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- BUDGET MODAL -->
+  <div class="overlay" id="budgetModal">
+    <div class="dialog dialog-sm">
+      <div class="dialog-head">
+        <h2>Set Budget Goal</h2>
+        <button class="icon-btn" id="closeBudgetModal"><i data-lucide="x"></i></button>
+      </div>
+      <form id="budgetForm">
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Category</label>
+            <select id="budCat" required>
+              <option value="">Select…</option>
+              <option>🍔 Food & Dining</option><option>🚗 Transport</option><option>🛍️ Shopping</option>
+              <option>💡 Utilities</option><option>🏥 Healthcare</option><option>🎬 Entertainment</option>
+              <option>📚 Education</option><option>🏠 Housing</option><option>✈️ Travel</option>
+              <option>💪 Fitness</option><option>🎁 Gifts</option><option>📦 Other</option>
+            </select>
+          </div>
+          <div class="field-group"><label>Monthly Limit (₹)</label><input type="number" id="budLimit" placeholder="5000" min="1" required/></div>
+        </div>
+        <button type="submit" class="btn-primary full-w mt-8">Save Budget</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
