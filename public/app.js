@@ -801,6 +801,12 @@ document.getElementById('paymentOptions').addEventListener('click', e => {
 // ─────────────────────────────────────────
 document.getElementById('hamburger').addEventListener('click', () => {
   document.getElementById('sidebar').classList.toggle('open');
+  // Close sidebar when clicking outside on mobile
+document.getElementById('appScreen').addEventListener('click', (e) => {
+  if (!e.target.closest('.sidebar') && !e.target.closest('#hamburger')) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+});
 });
 // ─────────────────────────────────────────
 // DARK MODE
