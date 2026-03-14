@@ -596,7 +596,7 @@ function renderAll() {
 // ─────────────────────────────────────────
 let currentView = 'dashboard';
 
-function switchView(view) {
+function switchView(view, pushState = true) {
   currentView = view;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item[data-view]').forEach(n => n.classList.remove('active'));
@@ -608,10 +608,20 @@ function switchView(view) {
   if (view === 'analytics') { buildBarChart(); buildPieChart(); buildAnalyticsKPIs(); }
   if (view === 'dashboard') { buildLineChart(); buildDonutChart(); }
   document.getElementById('sidebar').classList.remove('open');
+
+  // Push to browser history so back button works
+  if (pushState) {
+    history.pushState({ view }, '', '#' + view);
+  }
 }
 
-document.querySelectorAll('[data-view]').forEach(el => {
-  el.addEventListener('click', () => switchView(el.dataset.view));
+// Handle back/forward browser navigation
+window.addEventListener('popstate', e => {
+  if (e.state?.view) {
+    switchView(e.state.view, false);
+  } else {
+    switchView('dashboard', false);
+  }
 });
 
 // ─────────────────────────────────────────
@@ -829,7 +839,12 @@ function showToast(msg) {
 // INIT — restore session on page load
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  // Restore saved theme
+    // Restore view from URL hash on load
+  const hashView = window.location.hash.replace('#', '');
+  if (['dashboard','transactions','analytics','budget'].includes(hashView)) {
+    currentView = hashView;
+  }
+   // Restore saved theme
   const savedTheme = localStorage.getItem('spendora_theme');
   if (savedTheme === 'dark') applyTheme(true);
 
