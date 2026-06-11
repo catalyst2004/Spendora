@@ -1,22 +1,12 @@
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 
+// We use process.env to hide your database credentials securely
 const pool = mysql.createPool({
-  host:     process.env.DB_HOST     || 'localhost',
-  user:     process.env.DB_USER     || 'root',
-  password: process.env.DB_PASSWORD || 'vicky123',
-  database: process.env.DB_NAME     || 'spendora',
+  uri: process.env.DATABASE_URL, 
   waitForConnections: true,
   connectionLimit: 10,
+  queueLimit: 0
 });
 
-pool.getConnection()
-  .then(conn => {
-    console.log('✅ MySQL connected successfully');
-    conn.release();
-  })
-  .catch(err => {
-    console.error('❌ MySQL connection failed:', err.message);
-    process.exit(1);
-  });
-
+// Export the pool to be used in your server.js
 module.exports = pool;
