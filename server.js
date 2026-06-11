@@ -245,5 +245,6 @@ app.get('*', (req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 Spendora running at http://localhost:${PORT}`);
   console.log(`   Open that URL in your browser\n`);
-  module.exports = app;
+  
 });
+module.exports = app;
