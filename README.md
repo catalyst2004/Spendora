@@ -6,7 +6,7 @@ Spendora is a modern expense management and budgeting web application designed t
 
 🌐 Deployed on Vercel
 
-[Visit Spendora](YOUR_VERCEL_DEPLOYMENT_URL)
+[Visit Spendora](https://spendora-nine.vercel.app/)
 
 ---
 
