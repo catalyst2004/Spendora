@@ -1,121 +1,101 @@
-# Spendora — Setup Guide
-## Node.js + Express + MySQL
+# 💰 Spendora
+
+Spendora is a modern expense management and budgeting web application designed to help users track their spending habits, manage personal finances, and gain insights into their expenses through a simple and intuitive interface.
+
+## 🚀 Live Demo
+
+🌐 Deployed on Vercel
+
+[Visit Spendora](YOUR_VERCEL_DEPLOYMENT_URL)
 
 ---
 
-## What you need installed
-- **Node.js** → https://nodejs.org  (download the LTS version)
-- **MySQL** → https://dev.mysql.com/downloads/mysql/  (or XAMPP which includes MySQL)
+## 📖 Overview
+
+Managing personal finances can be challenging without proper tracking tools. Spendora provides an easy-to-use platform where users can:
+
+- Track daily expenses
+- Categorize transactions
+- Monitor spending patterns
+- Manage personal budgets
+- View financial summaries
+- Maintain expense records securely
+
+The application offers a clean user experience while ensuring reliable data storage and retrieval through a MySQL backend.
 
 ---
 
-## Step-by-step setup
+## ✨ Features
 
-### 1. Set up the database
+### 👤 User Authentication
+- Secure user registration and login
+- Password hashing for enhanced security
+- Session-based authentication
 
-Open **MySQL Workbench** (or any MySQL tool) and run the file `setup.sql`.
-This creates the `spendora` database and all tables automatically.
+### 💸 Expense Management
+- Add new expenses
+- Edit existing transactions
+- Delete unwanted records
+- Categorize expenses
 
-If you prefer the command line:
-```
-mysql -u root -p < setup.sql
-```
+### 📊 Financial Insights
+- Expense summaries
+- Spending analysis
+- Category-wise tracking
+- Budget monitoring
 
----
-
-### 2. Edit your database credentials
-
-Open `db.js` and update these lines to match your MySQL setup:
-
-```js
-const pool = mysql.createPool({
-  host:     'localhost',
-  user:     'root',        // ← your MySQL username
-  password: '',            // ← your MySQL password
-  database: 'spendora',
-});
-```
+### 📱 Responsive Design
+- Mobile-friendly interface
+- Optimized for desktop and tablet devices
+- Clean and modern UI
 
 ---
 
-### 3. Install dependencies
+## 🛠️ Tech Stack
 
-Open a terminal in this folder and run:
+### Frontend
+- HTML5
+- CSS3
+- JavaScript
 
-```
-npm install
-```
+### Backend
+- Node.js
+- Express.js
 
-This installs Express, MySQL driver, bcrypt, and JWT — takes about 30 seconds.
+### Database
+- MySQL
 
----
+### Deployment
+- Vercel
 
-### 4. Start the server
-
-```
-npm start
-```
-
-You should see:
-```
-✅ MySQL connected successfully
-🚀 Spendora running at http://localhost:3000
-```
+### Security
+- bcryptjs (Password Hashing)
 
 ---
+📌 Future Enhancements
+Monthly budget goals
+Expense visualization charts
+Export reports (PDF/Excel)
+Multi-user dashboards
+AI-powered spending insights
+Email notifications
+Dark mode support
+## 📂 Project Structure
 
-### 5. Open the app
-
-Go to **http://localhost:3000** in your browser.
-
-Register a new account and start tracking!
-
----
-
-## File structure
-
-```
-spendora-mysql/
-├── server.js        ← Backend API (all routes)
-├── db.js            ← MySQL connection config
-├── setup.sql        ← Run once to create the database
-├── package.json     ← Node dependencies
-├── README.md        ← This file
-└── public/
-    ├── index.html   ← Frontend (unchanged)
-    ├── style.css    ← Styles (unchanged)
-    └── app.js       ← Frontend logic (now uses API)
-```
-
----
-
-## How the database is structured
-
-| Table      | What it stores                          |
-|------------|-----------------------------------------|
-| `users`    | Accounts (name, username, hashed password) |
-| `expenses` | All expense entries, linked to a user   |
-| `budgets`  | Monthly budget limits per category      |
-
-Each user's data is completely separate — user A cannot see user B's expenses.
-
----
-
-## Common issues
-
-**"MySQL connection failed"**
-→ Check your username/password in `db.js`
-→ Make sure MySQL is running
-
-**"npm install" fails**
-→ Make sure Node.js is installed: run `node -v` to check
-
-**Page not loading**
-→ Make sure the server is running (`npm start`)
-→ Go to http://localhost:3000 (not just opening index.html directly)
-
----
-
-## Stopping the server
-
-Press `Ctrl + C` in the terminal.
+```text
+Spendora/
+│
+├── public/                 # Frontend assets
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│   └── pages/
+│
+├── db.js                   # MySQL database configuration
+├── server.js               # Main Express server
+├── setup.sql               # Database schema and initialization
+├── vercel.json             # Vercel deployment configuration
+├── package.json            # Project metadata and dependencies
+├── package-lock.json       # Dependency lock file
+├── .gitignore              # Git ignored files
+└── README.md               # Project documentation
