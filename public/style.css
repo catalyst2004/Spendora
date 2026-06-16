@@ -944,3 +944,45 @@ html.dark .search-box input { color: var(--text-primary); }
   .page-title { font-size: 18px; }
   .dialog  { padding: 20px; }
 }
+.wallet-card{
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.wallet-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.wallet-balance{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.wallet-meta{
+  color:var(--text-secondary);
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+.wallet-warning{
+  margin-top:10px;
+  font-size:14px;
+  font-weight:600;
+}
+
+#walletProgress{
+  transition:width .3s ease;
+}
+
+#openWalletModal{
+  margin-top:15px;
+  width:100%;
+}
