@@ -951,10 +951,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentView = hashView;
   }
    // Restore saved theme
+   lucide.createIcons();
   const savedTheme = localStorage.getItem('spendora_theme');
   if (savedTheme === 'dark') applyTheme(true);
 
-  lucide.createIcons();
+  
   if (loadSession()) {
     // Verify token is still valid with server
     try {
