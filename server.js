@@ -13,10 +13,12 @@ async function initDB() {
     await db.query(`CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL, username VARCHAR(50) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
     await db.query(`CREATE TABLE IF NOT EXISTS expenses (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, title VARCHAR(150) NOT NULL, amount DECIMAL(10,2) NOT NULL, category VARCHAR(80) NOT NULL, date DATE NOT NULL, note VARCHAR(255) DEFAULT '', payment VARCHAR(50) DEFAULT 'Cash', created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`);
     await db.query(`CREATE TABLE IF NOT EXISTS budgets (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, category VARCHAR(80) NOT NULL, monthly_limit DECIMAL(10,2) NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, UNIQUE KEY unique_user_category (user_id, category), FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`);
+    await db.query('CREATE TABLE IF NOT EXISTS wallets (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL UNIQUE, monthly_income DECIMAL(10,2) NOT NULL DEFAULT 0,current_balance DECIMAL(10,2) NOT NULL DEFAULT 0,alert_limit DECIMAL(10,2) NOT NULL DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)');
     console.log('✅ Database tables ready');
   } catch (err) {
     console.error('❌ Table creation failed:', err.message);
   }
+
 }
 initDB();
 
@@ -229,6 +231,73 @@ app.delete('/api/budgets/:id', auth, async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete budget.' });
+  }
+});
+// get api wallet
+app.get('/api/wallet', auth, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      'SELECT * FROM wallets WHERE user_id = ?',
+      [req.user.id]
+    );
+
+    if (!rows.length) {
+      return res.json({
+        monthly_income: 0,
+        current_balance: 0,
+        alert_limit: 0
+      });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load wallet.' });
+  }
+});
+app.post('/api/wallet', auth, async (req, res) => {
+  const {
+    monthly_income,
+    alert_limit
+  } = req.body;
+
+  if (monthly_income <= 0)
+    return res.status(400).json({
+      error: 'Income must be greater than zero.'
+    });
+
+  try {
+
+    await db.query(
+      `
+      INSERT INTO wallets
+      (user_id, monthly_income, current_balance, alert_limit)
+      VALUES (?, ?, ?, ?)
+
+      ON DUPLICATE KEY UPDATE
+      monthly_income = VALUES(monthly_income),
+      current_balance = VALUES(monthly_income),
+      alert_limit = VALUES(alert_limit)
+      `,
+      [
+        req.user.id,
+        monthly_income,
+        monthly_income,
+        alert_limit
+      ]
+    );
+
+    const [wallet] = await db.query(
+      'SELECT * FROM wallets WHERE user_id = ?',
+      [req.user.id]
+    );
+
+    res.json(wallet[0]);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'Failed to save wallet.'
+    });
   }
 });
 

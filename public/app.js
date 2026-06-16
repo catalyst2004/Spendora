@@ -14,6 +14,7 @@ let expenses    = [];
 let budgets     = [];
 let charts      = {};
 let lineChartDays = 7;
+let wallet = null;
 
 // ─────────────────────────────────────────
 // API HELPER
@@ -121,14 +122,16 @@ function showAuth() {
 }
 
 async function loadAllData() {
-  const [exp, bud] = await Promise.all([
-    apiFetch('/expenses'),
-    apiFetch('/budgets'),
-  ]);
-  expenses = exp;
-  budgets  = bud;
-}
+ const [exp, bud, wal] = await Promise.all([
+  apiFetch('/expenses'),
+  apiFetch('/budgets'),
+  apiFetch('/wallet'),
+]);
 
+expenses = exp;
+budgets  = bud;
+wallet   = wal;
+}
 // ─────────────────────────────────────────
 // AUTH FORMS
 // ─────────────────────────────────────────
@@ -281,7 +284,57 @@ function updateKPIs() {
   document.getElementById('dailyAvg').textContent   = fmt(daysPast ? total / daysPast : 0);
   document.getElementById('highestCat').textContent = topCat ? catName(topCat[0]) : '—';
 }
+//WALLET UPDATE UI
+function updateWalletUI() {
 
+  if (!wallet) return;
+
+  const income = Number(wallet.monthly_income || 0);
+
+  const spent = thisMonth()
+    .reduce((sum, e) => sum + Number(e.amount), 0);
+
+  const balance = income - spent;
+
+  document.getElementById('walletIncome').textContent =
+    fmt(income);
+
+  document.getElementById('walletBalance').textContent =
+    fmt(balance);
+
+  document.getElementById('walletAlert').textContent =
+    fmt(wallet.alert_limit);
+
+  const percent =
+    income > 0
+      ? Math.max((balance / income) * 100, 0)
+      : 0;
+
+  const bar =
+    document.getElementById('walletProgress');
+
+  bar.style.width = percent + '%';
+
+  const warning =
+    document.getElementById('walletWarning');
+
+  if (balance <= wallet.alert_limit) {
+
+    warning.textContent =
+      '⚠️ Low balance warning';
+
+    warning.style.color =
+      '#ef4444';
+
+    showToast(
+      'Wallet balance is running low'
+    );
+
+  } else {
+
+    warning.textContent = '';
+  }
+}
 // ─────────────────────────────────────────
 // SMART INSIGHTS
 // ─────────────────────────────────────────
@@ -578,6 +631,7 @@ function renderBudgets() {
 // MASTER RENDER
 // ─────────────────────────────────────────
 function renderAll() {
+  updateWalletUI();
   updateKPIs();
   buildInsights();
   buildLineChart();
@@ -635,8 +689,18 @@ document.getElementById('closeModal').addEventListener('click', () => closeOverl
 document.getElementById('openBudgetModal').addEventListener('click', () => openOverlay('budgetModal'));
 document.getElementById('closeBudgetModal').addEventListener('click', () => closeOverlay('budgetModal'));
 document.querySelectorAll('.overlay').forEach(ov =>
-  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); })
-);
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); }));
+  //new feature
+   document.getElementById('openWalletModal')
+.addEventListener('click', () => {
+  openOverlay('walletModal');
+});
+
+document.getElementById('closeWalletModal')
+.addEventListener('click', () => {
+  closeOverlay('walletModal');
+});
+
 
 // ─────────────────────────────────────────
 // ADD EXPENSE  →  POST /api/expenses
@@ -709,7 +773,43 @@ document.getElementById('budgetForm').addEventListener('submit', async e => {
     btn.disabled    = false;
   }
 });
+// ─────────────────────────────────────────
+// WALLET FORM
+// ─────────────────────────────────────────
 
+document
+.getElementById('walletForm')
+.addEventListener('submit', async e => {
+
+  e.preventDefault();
+
+  try {
+
+    wallet = await apiFetch('/wallet', {
+      method: 'POST',
+
+      body: JSON.stringify({
+        monthly_income: Number(
+          document.getElementById('walletIncomeInput').value
+        ),
+
+        alert_limit: Number(
+          document.getElementById('walletAlertInput').value
+        )
+      })
+    });
+
+    updateWalletUI();
+
+    closeOverlay('walletModal');
+
+    showToast('Wallet updated successfully');
+
+  } catch (err) {
+
+    showToast('Error: ' + err.message);
+  }
+});
 // ─────────────────────────────────────────
 // DELETE EXPENSE  →  DELETE /api/expenses/:id
 // ─────────────────────────────────────────

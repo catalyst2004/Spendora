@@ -164,6 +164,34 @@
       </header>
 
       <!-- DASHBOARD -->
+  <div class="wallet-card">
+  <div class="wallet-header">
+    <h3>Wallet Balance</h3>
+  </div>
+
+  <div id="walletBalance" class="wallet-balance">
+    ₹0
+  </div>
+
+  <div class="wallet-meta">
+    Income:
+    <span id="walletIncome">₹0</span>
+  </div>
+
+  <div class="wallet-meta">
+    Alert:
+    <span id="walletAlert">₹0</span>
+  </div>
+
+  <div class="progress-bg">
+    <div id="walletProgress" class="progress-fill fill-safe"></div>
+      <!-- Add this -->
+  <button id="openWalletModal" class="btn-primary small">
+    Manage Wallet
+  </button>
+  </div>
+
+</div>
       <section class="view active" id="view-dashboard">
         <div class="kpi-row">
           <div class="kpi-card accent-blue">
@@ -216,7 +244,7 @@
           <div class="tx-list" id="recentList"></div>
         </div>
       </section>
-
+       
       <!-- TRANSACTIONS -->
       <section class="view" id="view-transactions">
         <div class="panel">
@@ -327,7 +355,54 @@
       </form>
     </div>
   </div>
+ 
+<!-- /*-----------------------------*/ -->
+ <!-- WALLET MODAL -->
+<div class="overlay" id="walletModal">
+  <div class="dialog dialog-sm">
 
+    <div class="dialog-head">
+      <h2>Wallet Settings</h2>
+
+      <button class="icon-btn" id="closeWalletModal">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <form id="walletForm">
+
+      <div class="field-group">
+        <label>Monthly Income (₹)</label>
+
+        <input
+          type="number"
+          id="walletIncomeInput"
+          min="0"
+          required
+        />
+      </div>
+
+      <div class="field-group">
+        <label>Low Balance Alert (₹)</label>
+
+        <input
+          type="number"
+          id="walletAlertInput"
+          min="0"
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="btn-primary full-w mt-8">
+        Save Wallet
+      </button>
+
+    </form>
+
+  </div>
+</div>
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
 </body>
